@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { writeFile, mkdir } from "fs/promises"
 import path from "path"
+import { randomUUID } from "crypto"
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -14,17 +15,26 @@ export async function POST(request: NextRequest) {
   const data = await request.formData()
   const file: File | null = data.get("file") as unknown as File
   const projectId: string = data.get("projectId") as string
+  const requestedType = (data.get("type") as string) || "upload"
+  const fileType = requestedType === "download" ? "download" : "upload"
+
+  if (fileType === "download" && session.user.role !== "admin") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+  }
 
   if (!file || !projectId) {
     return NextResponse.json({ error: "File and projectId are required" }, { status: 400 })
   }
 
-  // Check if project belongs to user
+  // Check if project belongs to user (or allow admin access)
   const project = await prisma.project.findFirst({
-    where: {
-      id: projectId,
-      clientId: session.user.id,
-    },
+    where:
+      session.user.role === "admin"
+        ? { id: projectId }
+        : {
+            id: projectId,
+            clientId: session.user.id,
+          },
   })
 
   if (!project) {
@@ -42,7 +52,10 @@ export async function POST(request: NextRequest) {
     // Directory might already exist
   }
 
-  const fileName = `${Date.now()}-${file.name}`
+  const originalName = path.basename(file.name)
+  const sanitizedName = originalName.replace(/[^a-zA-Z0-9._-]/g, "_")
+  const extension = path.extname(sanitizedName)
+  const fileName = `${Date.now()}-${randomUUID()}${extension}`
   const filePath = path.join(uploadsDir, fileName)
 
   await writeFile(filePath, buffer)
@@ -54,7 +67,7 @@ export async function POST(request: NextRequest) {
       path: filePath,
       projectId,
       uploadedBy: session.user.id,
-      type: "upload",
+      type: fileType,
     },
   })
 

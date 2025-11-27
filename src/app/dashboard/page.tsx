@@ -65,22 +65,22 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-4 py-6">
             <h1 className="text-3xl font-bold text-gray-900">Client Portal</h1>
-            <div className="flex items-center space-x-4">
-              <span>Welcome, {session?.user?.name}</span>
+            <div className="flex items-center gap-4 text-sm font-semibold text-gray-800">
+              <span className="text-gray-900">Welcome, {session?.user?.name}</span>
               {session?.user?.role === "admin" && (
                 <a
                   href="/admin"
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-white shadow-sm transition hover:bg-blue-700"
                 >
                   Admin Panel
                 </a>
               )}
               <button
                 onClick={() => signOut()}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                className="rounded-lg bg-red-600 px-4 py-2 text-white shadow-sm transition hover:bg-red-700"
               >
                 Sign Out
               </button>
@@ -89,52 +89,57 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-6xl py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Your Projects</h2>
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-semibold text-gray-900">Your Projects</h2>
+              <p className="text-sm text-gray-600">
+                Keep everything in one place with a quick overview of active work.
+              </p>
+            </div>
             <button
               onClick={() => setShowCreateForm(true)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
             >
               Create New Project
             </button>
           </div>
 
           {showCreateForm && (
-            <div className="bg-white p-6 rounded-lg shadow mb-6">
-              <h3 className="text-lg font-medium mb-4">Create New Project</h3>
+            <div className="mx-auto mb-8 w-full max-w-3xl rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+              <h3 className="mb-4 text-lg font-semibold text-gray-900">Create New Project</h3>
               <form onSubmit={handleCreateProject}>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Title</label>
+                  <label className="block text-sm font-semibold text-gray-800">Title</label>
                   <input
                     type="text"
                     value={newProject.title}
                     onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     required
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700">Description</label>
+                  <label className="block text-sm font-semibold text-gray-800">Description</label>
                   <textarea
                     value={newProject.description}
                     onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                    rows={3}
+                    className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    rows={4}
                   />
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex flex-wrap gap-3">
                   <button
                     type="submit"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                    className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
                   >
                     Create
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowCreateForm(false)}
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                    className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
                   >
                     Cancel
                   </button>
@@ -143,44 +148,48 @@ export default function Dashboard() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => (
-              <div key={project.id} className="bg-white overflow-hidden shadow rounded-lg">
+              <div key={project.id} className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
                 <div className="p-6">
-                  <h3 className="text-lg font-medium text-gray-900">{project.title}</h3>
-                  <p className="mt-2 text-sm text-gray-500">{project.description}</p>
+                  <h3 className="text-lg font-semibold text-gray-900">{project.title}</h3>
+                  <p className="mt-2 text-sm text-gray-600">{project.description}</p>
                   <div className="mt-4">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      project.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      project.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center rounded-full px-3 py-0.5 text-xs font-semibold ${
+                        project.status === "completed"
+                          ? "bg-green-100 text-green-800"
+                          : project.status === "in_progress"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
                       {project.status}
                     </span>
                   </div>
-                  <div className="mt-4 text-sm text-gray-500">
+                  <div className="mt-4 text-sm text-gray-600">
                     Created: {new Date(project.createdAt).toLocaleDateString()}
                   </div>
                   <div className="mt-4 space-y-2">
-                    <button className="text-indigo-600 hover:text-indigo-900">
+                    <button className="text-sm font-semibold text-indigo-600 transition hover:text-indigo-900">
                       View Details
                     </button>
                     <div>
                       <input
                         type="file"
                         onChange={(e) => handleFileUpload(project.id, e.target.files?.[0])}
-                        className="text-sm"
+                        className="text-sm text-gray-600"
                       />
                     </div>
                     {project.files.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-medium">Files:</h4>
-                        <ul className="text-sm">
+                        <h4 className="text-sm font-semibold text-gray-800">Files:</h4>
+                        <ul className="text-sm text-gray-600">
                           {project.files.map((file: any) => (
                             <li key={file.id}>
                               <a
                                 href={`/api/files/${file.id}`}
-                                className="text-blue-600 hover:text-blue-800"
+                                className="font-semibold text-blue-600 transition hover:text-blue-800"
                                 download
                               >
                                 {file.name}
@@ -192,9 +201,9 @@ export default function Dashboard() {
                     )}
                     {project.invoice && (
                       <div>
-                        <h4 className="text-sm font-medium">Invoice:</h4>
-                        <p className="text-sm">Amount: ${project.invoice.amount}</p>
-                        <p className="text-sm">Status: {project.invoice.status}</p>
+                        <h4 className="text-sm font-semibold text-gray-800">Invoice:</h4>
+                        <p className="text-sm text-gray-600">Amount: ${project.invoice.amount}</p>
+                        <p className="text-sm text-gray-600">Status: {project.invoice.status}</p>
                       </div>
                     )}
                   </div>
