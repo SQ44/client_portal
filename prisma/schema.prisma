@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("client") // client or admin
+  projects  Project[]
+  files     File[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("pending") // pending, in_progress, completed
+  clientId    String
+  client      User     @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  files       File[]
+  invoice     Invoice?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model File {
+  id         String   @id @default(cuid())
+  name       String
+  path       String
+  projectId  String
+  project    Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedBy String
+  uploader   User    @relation(fields: [uploadedBy], references: [id])
+  type       String   // upload or download
+  createdAt  DateTime @default(now())
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  amount    Float
+  status    String   @default("draft") // draft, sent, paid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
